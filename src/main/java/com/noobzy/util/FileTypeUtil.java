@@ -23,6 +23,7 @@ public class FileTypeUtil {
 
     final static private String FLIECLASS_PICTURE = "picture";
     final static private String FLIECLASS_SOUND = "sound";
+    final static private String FILECLASS_VIDEO = "video";
     final static private String FLIECLASS_DOCUMENT = "document";
     final static private String FLIECLASS_ELSE = "else";
     final static private String FLIECLASS_COMPRESSED = "compressed";
@@ -175,6 +176,8 @@ public class FileTypeUtil {
 
             if (pictureSet.contains(suffix)) {
                 return FLIECLASS_PICTURE;
+            } else if (videoSet.contains(suffix)) {
+                return FILECLASS_VIDEO;
             } else if (soundSet.contains(suffix)) {
                 return FLIECLASS_SOUND;
             } else if (compressedSet.contains(suffix)) {

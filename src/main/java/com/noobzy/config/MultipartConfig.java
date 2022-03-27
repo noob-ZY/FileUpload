@@ -15,9 +15,9 @@ public class MultipartConfig {
     public MultipartConfigElement multipartConfigElement(){
         MultipartConfigFactory factory = new MultipartConfigFactory();
         //文件最大100M
-        factory.setMaxFileSize(DataSize.of(100, DataUnit.MEGABYTES));
+        factory.setMaxFileSize(DataSize.of(1000, DataUnit.MEGABYTES));
         // 设置总上传数据总大小1000M
-        factory.setMaxRequestSize(DataSize.of(1000, DataUnit.MEGABYTES));
+        factory.setMaxRequestSize(DataSize.of(2000, DataUnit.MEGABYTES));
         return factory.createMultipartConfig();
     }
 
