@@ -27,7 +27,7 @@ public class MongoMapperImpl implements MongoMapper {
         return mongoTemplate.exists(
                 Query.query(Criteria
                         .where("MD5").is(md5)
-                        .and("FileSize").is(fileSize))
+                        .and("fileSize").is(fileSize))
                 ,"savedFiles");
     }
 
