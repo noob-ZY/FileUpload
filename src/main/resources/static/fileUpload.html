@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+</head>
+
+<script src="/js/axios0.26.1/dist/axios.min.js"></script>
+<script src="/js/vue_global@3.2.31.js"></script>
+
+<body>
+<div id="uploadForm">
+    <h2>{{msg}}</h2>
+    <form>
+        <input type="file" @change="getFile($event)" multiple="multiple">
+        <button @click="submit($event)">提交</button>
+    </form>
+</div>
+
+<script>
+
+    var vElement = {
+        data() {
+            return {
+                msg: "文件上传",
+                files: []
+            }
+        },
+        methods: {
+            getFile: function(event) {
+                this.files = event.target.files;
+                console.log("选择了" + this.files.length + "个文件");
+            },
+            submit: function(event) {
+                event.preventDefault();
+                let formData = new FormData();
+                for(let i = 0; i < this.files.length; i++) {
+                    formData.append("files", this.files[i]);
+                }
+
+                var url = "/file/upload";
+                let config = {
+                    headers: {
+                        'Content-Type': 'multipart/form-data'
+                    }
+                }
+                axios.post(url, formData, config)
+                .then(function (response) {
+                    alert("成功");
+                    console.log("上传成功");
+                })
+                .catch(function (error) {
+                    alert("失败");
+                    console.log(error);
+                });
+            }
+        }
+    };
+
+    Vue.createApp(vElement).mount('#uploadForm');
+
+</script>
+
+</body>
+</html>
