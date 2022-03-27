@@ -3,6 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
+
+    <style>
+        .progress-wrapper { position: relative; height: 50px; border-radius: 5px;}
+        .progress-wrapper .progress-progress { position: absolute; left: 0; top: 0; height: 100%; width: 0%; border-radius: 5px; background-color: darkturquoise; z-index: 1; }
+    </style>
 </head>
 
 <script src="/js/axios0.26.1/dist/axios.min.js"></script>
@@ -15,6 +20,10 @@
         <input type="file" @change="getFile($event)" multiple="multiple">
         <button @click="submit($event)">提交</button>
     </form>
+    <p>上传进度：</p>
+    <div class="progress-wrapper">
+        <div class="progress-rate">{{(uploadRate*100).toFixed(2)}}% </div>
+    </div>
 </div>
 
 <script>
@@ -22,6 +31,7 @@
     var vElement = {
         data() {
             return {
+                uploadRate: 0,
                 msg: "文件上传",
                 files: []
             }
@@ -42,8 +52,24 @@
                 let config = {
                     headers: {
                         'Content-Type': 'multipart/form-data'
-                    }
-                }
+                    },
+                    onUploadProgress: function (e) {
+                       console.log("进度：");
+                       console.log(e);
+                       //属性lengthComputable主要表明总共需要完成的工作量和已经完成的工作是否可以被测量
+                       //如果lengthComputable为false，就获取不到e.total和e.loaded
+                       if (e.lengthComputable) {
+                           var rate = vm.uploadRate = e.loaded / e.total;  //已上传的比例
+                           console.log(this.uploadRate);
+                           if (rate < 1) {
+                               //这里的进度只能表明文件已经上传到后台，但是后台有没有处理完还不知道
+                               //因此不能直接显示为100%，不然用户会误以为已经上传完毕，关掉浏览器的话就可能导致上传失败
+                               //等响应回来时，再将进度设为100%
+                               vm.uploadRate = rate;
+                           }
+                       }
+                   }
+                };
                 axios.post(url, formData, config)
                 .then(function (response) {
                     alert("成功");
@@ -57,7 +83,7 @@
         }
     };
 
-    Vue.createApp(vElement).mount('#uploadForm');
+    var vm = Vue.createApp(vElement).mount('#uploadForm');
 
 </script>
 
