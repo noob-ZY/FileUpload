@@ -28,20 +28,6 @@ public class FileHandler {
 
         File file = fileTask.getFile();
 
-        try (RandomAccessFile randomAccessFile = new RandomAccessFile(file, "rw");
-             FileChannel fc = randomAccessFile.getChannel();
-             FileLock fl = fc.tryLock();){
-            if(fl == null){
-                fileTask.setResultMsg("failed");
-                fileTask.setState("failed");
-                return;
-            }
-        } catch (Exception e) {
-            fileTask.setResultMsg("failed");
-            fileTask.setState("failed");
-            return;
-        }
-
 
         try (FileInputStream fis = new FileInputStream(file)){
             //文件名
@@ -52,6 +38,8 @@ public class FileHandler {
             String md5DigestAsHex = DigestUtils.md5DigestAsHex(fis);
             fis.close();
             String fileClass = null;
+
+
 
             //文件类型
             try (FileInputStream nfis = new FileInputStream(file)){

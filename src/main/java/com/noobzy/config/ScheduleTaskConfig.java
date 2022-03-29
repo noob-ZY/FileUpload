@@ -50,6 +50,13 @@ public class ScheduleTaskConfig {
                 }
 
                 try {
+                    Long oldSize = file.length();
+                    Thread.sleep(10);
+                    Long newSize = file.length();
+                    if (!oldSize.equals(newSize)) {
+                        continue;
+                    }
+
                     File newFile = new File(file.getParentFile().getCanonicalPath()+ "/" + fileName);
                     file.renameTo(newFile);
                     FileTask fileTask = new FileTask();
