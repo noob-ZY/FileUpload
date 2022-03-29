@@ -57,7 +57,12 @@ public class UploadController {
                     fileTask.setState("pending");
                     fileTask.setUploadTime(LocalDateTime.now());
                     //[yyyy-MM-dd--HH-mm-ss-SSS]originalFilename.xxx
-                    //fileName = "[" + fileTask.getUploadTime().format(formatter) + "]" + fileName;
+
+                    if (fileName.matches("\\[\\d\\d\\d\\d-\\d\\d-\\d\\d--\\d\\d-\\d\\d-\\d\\d-\\d\\d\\d\\].*")) {
+                        fileName = fileName.replaceFirst("\\[\\d\\d\\d\\d-\\d\\d-\\d\\d--\\d\\d-\\d\\d-\\d\\d-\\d\\d\\d\\]" , "[" + LocalDateTime.now().format(formatter) + "]");
+                    } else {
+                        fileName = "[" + LocalDateTime.now().format(formatter) + "]" + fileName;
+                    }
 
                     //保存至临时存储文件夹
                     File tempSave = new File(PathConstant.PATH_BASE + "/" + PathConstant.PATH_TEMP + "/" + fileName);
