@@ -39,6 +39,7 @@ public class FileTypeUtil {
         videoSet.add("mov");
         videoSet.add("swf");
         videoSet.add("mkv");
+        videoSet.add("webm");
 
         soundSet.add("wav");
         soundSet.add("aif");
