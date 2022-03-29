@@ -22,8 +22,17 @@
     </form>
     <p>上传进度：</p>
     <div class="progress-wrapper">
-        <div class="progress-rate">{{(uploadRate*100).toFixed(2)}}% </div>
+        <div class="progress-rate">{{uploadState}}:{{(uploadRate*100).toFixed(2)}}% </div>
     </div>
+    <p>结果</p>
+    <div>
+        <ul>
+            <li v-for="item in taskInfos">
+                {{item.resultMsg}}  {{item.fileName}}
+            </li>
+        </ul>
+    </div>
+
 </div>
 
 <script>
@@ -33,7 +42,28 @@
             return {
                 uploadRate: 0,
                 msg: "文件上传",
-                files: []
+                files: [],
+                ws: null,
+                taskInfos: [],
+                uploadState: ""
+            }
+        },
+        mounted: function(){
+            this.ws = new WebSocket("ws://" + window.location.host + "/webSocket");
+
+            this.ws.onopen = function(){
+               console.log("open");
+            }
+            this.ws.onmessage = function(e){
+                var taskInfo = JSON.parse(e.data);
+                vm.taskInfos.unshift(taskInfo);
+            }
+            this.ws.onclose = function(e){
+            　　console.log("close");
+            }
+
+            this.ws.onerror = function(e){
+            　　console.log(error);
             }
         },
         methods: {
@@ -60,6 +90,7 @@
                        //如果lengthComputable为false，就获取不到e.total和e.loaded
                        if (e.lengthComputable) {
                            var rate = vm.uploadRate = e.loaded / e.total;  //已上传的比例
+                           vm.uploadState = "上传中"
                            console.log(this.uploadRate);
                            if (rate < 1) {
                                //这里的进度只能表明文件已经上传到后台，但是后台有没有处理完还不知道
@@ -72,12 +103,13 @@
                 };
                 axios.post(url, formData, config)
                 .then(function (response) {
-                    alert("成功");
+                    vm.uploadState = "上传成功";
                     console.log("上传成功");
                 })
                 .catch(function (error) {
-                    alert("失败");
+                    vm.uploadState = "上传失败";
                     console.log(error);
+                    console.log("上传失败");
                 });
             }
         }

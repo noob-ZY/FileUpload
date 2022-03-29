@@ -1,5 +1,7 @@
 package com.noobzy.util;
 
+import com.noobzy.constant.PathConstant;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HashMap;
@@ -7,7 +9,7 @@ import java.util.HashSet;
 import java.util.Map;
 
 /**
- * https://blog.csdn.net/x18707731829/article/details/109261718
+ * 参考: https://blog.csdn.net/x18707731829/article/details/109261718
  */
 public class FileTypeUtil {
 
@@ -20,15 +22,6 @@ public class FileTypeUtil {
     final static HashSet<String> soundSet = new HashSet();
     final static HashSet<String> compressedSet = new HashSet();
     final static HashSet<String> documentSet = new HashSet();
-
-    final static private String FLIECLASS_PICTURE = "picture";
-    final static private String FLIECLASS_SOUND = "sound";
-    final static private String FILECLASS_VIDEO = "video";
-    final static private String FLIECLASS_DOCUMENT = "document";
-    final static private String FLIECLASS_ELSE = "else";
-    final static private String FLIECLASS_COMPRESSED = "compressed";
-
-
 
     // 初始化文件头类型，不够的自行补充
     static {
@@ -171,21 +164,21 @@ public class FileTypeUtil {
             }
 
             if (suffix == null || suffix.isEmpty() || suffix.isBlank()) {
-                return FLIECLASS_ELSE;
+                return PathConstant.PATH_ELSE;
             }
 
             if (pictureSet.contains(suffix)) {
-                return FLIECLASS_PICTURE;
+                return PathConstant.PATH_PICTURE;
             } else if (videoSet.contains(suffix)) {
-                return FILECLASS_VIDEO;
+                return PathConstant.PATH_VIDEO;
             } else if (soundSet.contains(suffix)) {
-                return FLIECLASS_SOUND;
+                return PathConstant.PATH_SOUND;
             } else if (compressedSet.contains(suffix)) {
-                return FLIECLASS_COMPRESSED;
+                return PathConstant.PATH_COMPRESSED;
             } else if (documentSet.contains(suffix)) {
-                return FLIECLASS_DOCUMENT;
+                return PathConstant.PATH_DOCUMENT;
             } else {
-                return FLIECLASS_ELSE;
+                return PathConstant.PATH_ELSE;
             }
 
 

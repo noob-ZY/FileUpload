@@ -1,19 +1,23 @@
 package com.noobzy.controller;
 
 
+import com.noobzy.constant.PathConstant;
+import com.noobzy.entity.FileTask;
 import com.noobzy.taskHandler.AsyncHandler;
+import com.noobzy.util.HttpUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 import org.springframework.web.multipart.MultipartFile;
 
+import javax.servlet.http.HttpSession;
 import java.io.File;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
@@ -31,34 +35,43 @@ public class UploadController {
     @PostMapping("/upload")
     public void uploadHandle(@RequestParam MultipartFile[] files) {
 
-        String path = System.getProperty("user.dir");
-        List<File> tempFiles;
+        HttpSession session = HttpUtil.getCurrentSession();
+        List<FileTask> fileTasks;
 
         if (files != null && files.length > 0){
 
-            tempFiles = new ArrayList<>(files.length);
+            fileTasks = new ArrayList<>(files.length);
 
             for (MultipartFile file : files) {
 
-                LocalDateTime localDateTime = LocalDateTime.now();
-
                 try {
+                    //创建文件夹
                     String fileName = file.getOriginalFilename();
-                    File tempDir = new File(path + "/temp");
+                    File tempDir = new File(PathConstant.PATH_BASE + "/" + PathConstant.PATH_TEMP);
                     if (!tempDir.exists()) {
                         tempDir.mkdirs();
                     }
 
-                    File tempSave = new File(path + "/temp/[" + localDateTime.format(formatter) + "]" + fileName);
+                    //任务信息
+                    FileTask fileTask = new FileTask();
+                    fileTask.setState("pending");
+                    fileTask.setUploadTime(LocalDateTime.now());
+                    //[yyyy-MM-dd--HH-mm-ss-SSS]originalFilename.xxx
+                    fileTask.setFileName("[" + fileTask.getUploadTime().format(formatter) + "]" + fileName);
+
+                    //保存至临时存储文件夹
+                    File tempSave = new File(PathConstant.PATH_BASE + "/" + PathConstant.PATH_TEMP + "/" + fileTask.getFileName());
                     file.transferTo(tempSave);
-                    tempFiles.add(tempSave);
+
+                    //添加至任务列表
+                    fileTasks.add(fileTask);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
 
             }
 
-            handler.fileClassify(tempFiles);
+            handler.fileClassify(fileTasks, session);
         }
 
     }

@@ -1,6 +1,8 @@
 package com.noobzy.taskHandler;
 
 
+import com.noobzy.constant.PathConstant;
+import com.noobzy.entity.FileTask;
 import com.noobzy.mapper.MongoMapper;
 import com.noobzy.util.FileTypeUtil;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -19,16 +21,16 @@ public class FileHandler {
     private MongoMapper mongoMapper;
 
     @Transactional(rollbackFor = Exception.class)
-    public void execute(File file) throws Exception {
+    public void execute(FileTask fileTask) throws Exception {
 
-        String path = System.getProperty("user.dir");
+        File file = new File(PathConstant.PATH_BASE + "/" + PathConstant.PATH_TEMP + "/" + fileTask.getFileName());
 
         try (FileInputStream fis = new FileInputStream(file)){
             //文件名
             String fileName = file.getName();
             //文件大小
             Long fileSize = file.length();
-            //MD5
+            //计算MD5
             String md5DigestAsHex = DigestUtils.md5DigestAsHex(fis);
             fis.close();
             String fileClass = null;
@@ -48,22 +50,27 @@ public class FileHandler {
                 //delete
                 System.out.println(file.getName() + " already exists");
                 file.delete();
+
+                fileTask.setState("done");
+                fileTask.setResultMsg("The same file already exists");
             } else {
                 //classify
-                File pathDir = new File(path + "/" + fileClass);
+                File pathDir = new File(PathConstant.PATH_BASE + "/" + fileClass);
                 if (!pathDir.exists()) {
                     pathDir.mkdirs();
                 }
 
-                File newPosition = new File(path + "/" + fileClass + "/" + fileName);
+                File newPosition = new File(PathConstant.PATH_BASE + "/" + fileClass + "/" + fileName);
                 file.renameTo(newPosition);
                 try {
                     //写入db
                     mongoMapper.saveNewFile(fileName, md5DigestAsHex, fileSize, fileClass, LocalDateTime.now());
                 } catch (Exception e) {
-                    newPosition = new File(path + "/error/" + fileName);
+                    newPosition = new File(PathConstant.PATH_BASE + "/error/" + fileName);
                     file.renameTo(newPosition);
                 }
+                fileTask.setState("done");
+                fileTask.setResultMsg("Successfully saved");
             }
         } catch (Exception e) {
             throw e;
