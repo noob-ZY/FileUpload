@@ -12,6 +12,9 @@ import org.springframework.util.DigestUtils;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.RandomAccessFile;
+import java.nio.channels.FileChannel;
+import java.nio.channels.FileLock;
 import java.time.LocalDateTime;
 
 @Component
@@ -24,6 +27,21 @@ public class FileHandler {
     public void execute(FileTask fileTask) throws Exception {
 
         File file = fileTask.getFile();
+
+        try (RandomAccessFile randomAccessFile = new RandomAccessFile(file, "rw");
+             FileChannel fc = randomAccessFile.getChannel();
+             FileLock fl = fc.tryLock();){
+            if(fl == null){
+                fileTask.setResultMsg("failed");
+                fileTask.setState("failed");
+                return;
+            }
+        } catch (Exception e) {
+            fileTask.setResultMsg("failed");
+            fileTask.setState("failed");
+            return;
+        }
+
 
         try (FileInputStream fis = new FileInputStream(file)){
             //文件名
