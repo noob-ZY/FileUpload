@@ -23,7 +23,7 @@ public class FileHandler {
     @Transactional(rollbackFor = Exception.class)
     public void execute(FileTask fileTask) throws Exception {
 
-        File file = new File(PathConstant.PATH_BASE + "/" + PathConstant.PATH_TEMP + "/" + fileTask.getFileName());
+        File file = fileTask.getFile();
 
         try (FileInputStream fis = new FileInputStream(file)){
             //文件名

@@ -1,16 +1,18 @@
 package com.noobzy.entity;
 
+import com.alibaba.fastjson.annotation.JSONField;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.noobzy.config.FileObjectSerializer;
 import lombok.Data;
 
+import java.io.File;
 import java.time.LocalDateTime;
 
 @Data
 public class FileTask extends Task{
 
-    /**
-     * 文件名，因为打算向页面暂时信息，懒得处理，直接使用String
-     */
-    private String fileName;
+    @JSONField(serializeUsing = FileObjectSerializer.class)
+    private File file;
 
 
     /**

@@ -57,14 +57,16 @@ public class UploadController {
                     fileTask.setState("pending");
                     fileTask.setUploadTime(LocalDateTime.now());
                     //[yyyy-MM-dd--HH-mm-ss-SSS]originalFilename.xxx
-                    fileTask.setFileName("[" + fileTask.getUploadTime().format(formatter) + "]" + fileName);
+                    //fileName = "[" + fileTask.getUploadTime().format(formatter) + "]" + fileName;
 
                     //保存至临时存储文件夹
-                    File tempSave = new File(PathConstant.PATH_BASE + "/" + PathConstant.PATH_TEMP + "/" + fileTask.getFileName());
+                    File tempSave = new File(PathConstant.PATH_BASE + "/" + PathConstant.PATH_TEMP + "/" + fileName);
                     file.transferTo(tempSave);
 
+                    fileTask.setFile(tempSave);
                     //添加至任务列表
                     fileTasks.add(fileTask);
+
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

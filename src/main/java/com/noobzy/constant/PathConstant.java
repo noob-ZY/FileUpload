@@ -43,4 +43,9 @@ public class PathConstant {
      */
     final static public String PATH_ELSE = "else";
 
+    /**
+     * 定制自动处理用文件夹相对路径
+     */
+    final static public String PATH_AUTO_MANAGE = "autoManage";
+
 }
